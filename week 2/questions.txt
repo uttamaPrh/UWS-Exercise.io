@@ -1,0 +1,28 @@
+Which tags do you use to enclose JavaScript code?
+-> <script> tags are used to enclose JavaScript code.
+
+How can you include JavaScript code from another source in your documents?
+-> You can include JavaScript code from another source using the <script src="URL"></script> tag.
+
+Which JavaScript function is the equivalent of echo or print used in PHP for quick output of values or expressions?
+-> The equivalent function in JavaScript is console.log().
+
+How can you create a comment in JavaScript?
+-> Single-line comment: // This is a comment
+-> Multi-line comment: /* This is a comment */
+
+What is the JavaScript string concatenation operator?
+-> The + operator is used for string concatenation in JavaScript.
+
+Which keyword can you use within a JavaScript function to define a variable that has local scope?
+-> The var, let, or const keywords can be used to define a variable with local scope within a function.
+
+Give two cross-browser methods to display the URL assigned to the link with an id of thislink.
+-> document.getElementById("thislink").href
+-> document.querySelector("#thislink").href
+
+Which two JavaScript commands will make the browser load the previous page in its history array?
+-> history.back() or history.go(-1)
+
+What JavaScript command would you use to replace the current document with the main page at the oreilly.com website?
+-> window.location.replace("http://www.oreilly.com");

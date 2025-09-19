@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice</title>
+</head>
+
+<body>
+    <h1>Dice Generator</h1>
+    <button onclick=rollDice();>Roll</button>
+    <div id="displayDice"></div>
+    <script>
+        function rollDice() {
+            const diceDiv = document.getElementById('displayDice');
+            diceDiv.innerHTML = '';
+            const randomDice = Math.floor(Math.random() * 6) + 1;
+            const dices = [
+                'https://game-icons.net/icons/ffffff/000000/1x1/delapouite/dice-six-faces-one.svg',
+                'https://game-icons.net/icons/ffffff/000000/1x1/delapouite/dice-six-faces-two.svg',
+                'https://game-icons.net/icons/ffffff/000000/1x1/delapouite/dice-six-faces-three.svg',
+                'https://game-icons.net/icons/ffffff/000000/1x1/delapouite/dice-six-faces-four.svg',
+                'https://game-icons.net/icons/ffffff/000000/1x1/delapouite/dice-six-faces-five.svg',
+                'https://game-icons.net/icons/ffffff/000000/1x1/delapouite/dice-six-faces-six.svg'
+            ];
+            const diceImage = document.createElement("img");
+            diceImage.src = dices[randomDice - 1];
+            diceDiv.appendChild(diceImage);
+
+        }
+    </script>
+</body>
+
+</html>
