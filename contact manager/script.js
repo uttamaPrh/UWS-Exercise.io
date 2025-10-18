@@ -1,311 +1,188 @@
 
-// Array to hold all contact objects
-let contacts = [];
+        const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+        let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+        let currentEditId = null;
+        let deleteTargetId = null;
+        let currentPage = 1;
 
-// ID of the contact currently being edited (null if none)
-let currentEditId = null;
+        const isMobile = () => window.innerWidth <= 768;
+        const perPage = () => (isMobile() ? 6 : 12);
 
-// ID of the contact marked for deletion (null if none)
-let deleteTargetId = null;
+        document.addEventListener('DOMContentLoaded', () => displayContacts());
+        window.addEventListener('resize', () => displayContacts());
+        document.getElementById('search').addEventListener('input', searchContacts);
 
-// Object to keep track of current sorting state: which key and order (asc/desc)
-let currentSort = { key: null, order: 'asc' };
+        function previewImage(input, previewId) {
+            const file = input.files[0];
+            const preview = document.getElementById(previewId);
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => preview.src = e.target.result;
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = defaultAvatar;
+            }
+        }
 
-// Current page number for pagination
-let currentPage = 1;
+        function paginate(list) {
+            const start = (currentPage - 1) * perPage();
+            const end = start + perPage();
+            return list.slice(start, end);
+        }
 
-// Number of contacts to show per page
-const pageSize = 5;
+        function renderPagination(list) {
+            const totalPages = Math.ceil(list.length / perPage());
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
 
-// --------------------
-// Initialization
-// --------------------
+            if (totalPages <= 1) return;
 
-// On page load, load contacts from localStorage and setup event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    loadContacts(); // Load saved contacts and display them
-    document.getElementById('search').addEventListener('input', searchContacts); // Setup search input listener
-});
+            const prevBtn = document.createElement('button');
+            prevBtn.textContent = '⟨ Prev';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.className = currentPage === 1 ? 'disabled' : '';
+            prevBtn.onclick = () => { currentPage--; displayContacts(list); };
+            pagination.appendChild(prevBtn);
 
-// --------------------
-// Load & Save Contacts
-// --------------------
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = i === currentPage ? 'active' : '';
+                btn.onclick = () => { currentPage = i; displayContacts(list); };
+                pagination.appendChild(btn);
+            }
 
-// Loads contacts from localStorage into the contacts array and displays them
-function loadContacts() {
-    // Retrieve the 'contacts' item from localStorage, or initialize empty array if none found
-    contacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    displayContacts(); // Render contacts on the page
-}
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = 'Next ⟩';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.className = currentPage === totalPages ? 'disabled' : '';
+            nextBtn.onclick = () => { currentPage++; displayContacts(list); };
+            pagination.appendChild(nextBtn);
+        }
 
-// Saves the current contacts array into localStorage to persist data
-function saveContacts() {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-}
+        function displayContacts(list = contacts, isSearch = false) {
+            const grid = document.getElementById('contacts-grid');
+            const emptyDefault = document.getElementById('empty-default');
+            const emptySearch = document.getElementById('empty-search');
+            grid.innerHTML = '';
+            emptyDefault.style.display = 'none';
+            emptySearch.style.display = 'none';
 
-// --------------------
-// Pagination Logic
-// --------------------
+            if (list.length === 0) {
+                (isSearch ? emptySearch : emptyDefault).style.display = 'block';
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
 
-// Returns a subset (page) of the contact list based on the current page number and page size
-function paginate(list, page = 1) {
-    const start = (page - 1) * pageSize; // Calculate start index for slice
-    return list.slice(start, start + pageSize); // Return the slice corresponding to current page
-}
+            const paginated = paginate(list);
+            paginated.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'contact-card';
+                card.innerHTML = `
+          <img src="${c.image || defaultAvatar}" alt="${c.name}">
+          <h4>${c.name}</h4>
+        `;
+                card.onclick = () => openViewModal(c.id);
+                grid.appendChild(card);
+            });
 
-// Renders the pagination buttons (<Prev 1 2 3 Next>) based on total items and current page
-function renderPagination(total, page) {
-    const pagination = document.getElementById('pagination');
-    pagination.innerHTML = ''; // Clear existing pagination controls
+            renderPagination(list);
+        }
 
-    // If total contacts less than or equal to one page, no pagination needed
-    if (total <= pageSize) return;
+        function openAddModal() {
+            document.getElementById('add-modal').style.display = 'flex';
+            document.getElementById('add-preview').src = defaultAvatar;
+        }
 
-    const totalPages = Math.ceil(total / pageSize); // Calculate total number of pages
+        function closeAddModal() {
+            document.getElementById('add-modal').style.display = 'none';
+            document.getElementById('add-name').value = '';
+            document.getElementById('add-phone').value = '';
+            document.getElementById('add-email').value = '';
+            document.getElementById('add-image').value = '';
+        }
 
-    // Previous page button
-    const prevBtn = document.createElement('button');
-    prevBtn.textContent = '< Prev';
-    prevBtn.disabled = page === 1; // Disable if on first page
-    prevBtn.onclick = () => changePage(page - 1);
-    pagination.appendChild(prevBtn);
+        function addContact() {
+            const name = document.getElementById('add-name').value.trim();
+            const phone = document.getElementById('add-phone').value.trim();
+            const email = document.getElementById('add-email').value.trim();
+            const image = document.getElementById('add-preview').src;
+            if (!name || !phone || !email) return alert("Please fill all fields.");
 
-    // Buttons for each page number
-    for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i;
-        if (i === page) btn.classList.add('active'); // Highlight the current page
-        btn.onclick = () => changePage(i);
-        pagination.appendChild(btn);
-    }
+            contacts.unshift({ id: Date.now(), name, phone, email, image });
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+            closeAddModal();
+            currentPage = 1;
+            displayContacts();
+        }
 
-    // Next page button
-    const nextBtn = document.createElement('button');
-    nextBtn.textContent = 'Next >';
-    nextBtn.disabled = page === totalPages; // Disable if on last page
-    nextBtn.onclick = () => changePage(page + 1);
-    pagination.appendChild(nextBtn);
-}
+        function openViewModal(id) {
+            const c = contacts.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('view-avatar').src = c.image || defaultAvatar;
+            document.getElementById('view-details').innerHTML = `
+        <p><strong>Name:</strong> ${c.name}</p>
+        <p><strong>Phone:</strong> ${c.phone}</p>
+        <p><strong>Email:</strong> ${c.email}</p>`;
+            document.getElementById('view-modal').style.display = 'flex';
+            document.getElementById('view-edit-btn').onclick = () => { closeViewModal(); openEditModal(id); };
+            document.getElementById('view-delete-btn').onclick = () => { closeViewModal(); openDeleteModal(id); };
+        }
 
-// Changes the current page and refreshes the displayed contacts accordingly
-function changePage(page) {
-    currentPage = page;
-    displayContacts();
-}
+        function closeViewModal() { document.getElementById('view-modal').style.display = 'none'; }
 
-// --------------------
-// Display Contacts
-// --------------------
+        function openEditModal(id) {
+            currentEditId = id;
+            const c = contacts.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('edit-name').value = c.name;
+            document.getElementById('edit-phone').value = c.phone;
+            document.getElementById('edit-email').value = c.email;
+            document.getElementById('edit-preview').src = c.image || defaultAvatar;
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
 
-// Displays contacts in the table. If 'list' is provided, displays that filtered list.
-// 'isSearch' flag indicates whether this is a search result (to display appropriate messages)
-function displayContacts(list = contacts, isSearch = false) {
-    const tbody = document.querySelector('#contacts-table tbody');
-    const emptyDefault = document.getElementById('empty-default'); // Message for no contacts at all
-    const emptySearch = document.getElementById('empty-search');   // Message for no search results
-    const pagination = document.getElementById('pagination');
+        function closeEditModal() { document.getElementById('edit-modal').style.display = 'none'; }
 
-    tbody.innerHTML = '';          // Clear existing table rows
-    emptyDefault.style.display = 'none'; // Hide default empty message
-    emptySearch.style.display = 'none';  // Hide search empty message
-    pagination.style.display = 'none';   // Hide pagination initially
+        function saveEdit() {
+            const name = document.getElementById('edit-name').value.trim();
+            const phone = document.getElementById('edit-phone').value.trim();
+            const email = document.getElementById('edit-email').value.trim();
+            const image = document.getElementById('edit-preview').src;
+            if (!name || !phone || !email) return alert("Please fill all fields.");
 
-    // If no contacts to display
-    if (list.length === 0) {
-        if (isSearch) emptySearch.style.display = 'block'; // Show "No contacts found" message if searching
-        else emptyDefault.style.display = 'block';         // Show "No contacts yet" message if empty
-        return; // Nothing else to render
-    }
+            const i = contacts.findIndex(c => c.id === currentEditId);
+            if (i !== -1) {
+                contacts[i] = { ...contacts[i], name, phone, email, image };
+                localStorage.setItem('contacts', JSON.stringify(contacts));
+                closeEditModal();
+                displayContacts();
+            }
+        }
 
-    // Get only the contacts for the current page
-    const paginatedList = paginate(list, currentPage);
+        function openDeleteModal(id) {
+            deleteTargetId = id;
+            document.getElementById('delete-modal').style.display = 'flex';
+        }
 
-    // Create table rows for each contact in current page
-    paginatedList.forEach(contact => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${contact.name}</td>
-          <td>${contact.phone}</td>
-          <td>${contact.email}</td>
-          <td class="action-buttons">
-            <button class="edit" onclick="openEditModal(${contact.id})">Edit</button>
-            <button class="delete" onclick="openDeleteModal(${contact.id})">Delete</button>
-          </td>`;
-        tbody.appendChild(row);
-    });
+        function closeDeleteModal() { document.getElementById('delete-modal').style.display = 'none'; }
 
-    // Show pagination controls and render them based on total contacts
-    pagination.style.display = 'flex';
-    renderPagination(list.length, currentPage);
-}
+        function confirmDelete() {
+            contacts = contacts.filter(c => c.id !== deleteTargetId);
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+            closeDeleteModal();
+            displayContacts();
+        }
 
-// --------------------
-// Add Contact Functions
-// --------------------
+        function searchContacts() {
+            const q = document.getElementById('search').value.toLowerCase();
+            const filtered = contacts.filter(c => c.name.toLowerCase().includes(q));
+            currentPage = 1;
+            displayContacts(filtered, true);
+        }
 
-// Opens the modal dialog to add a new contact
-function openAddModal() {
-    document.getElementById('add-modal').style.display = 'flex';
-}
-
-// Closes the Add Contact modal and clears input fields
-function closeAddModal() {
-    document.getElementById('add-modal').style.display = 'none';
-    document.getElementById('add-name').value = '';
-    document.getElementById('add-phone').value = '';
-    document.getElementById('add-email').value = '';
-}
-
-// Validates input and adds a new contact to the list and storage
-function addContact() {
-    const name = document.getElementById('add-name').value.trim();
-    const phone = document.getElementById('add-phone').value.trim();
-    const email = document.getElementById('add-email').value.trim();
-
-    // Simple validation to ensure no empty fields
-    if (!name || !phone || !email) {
-        alert('Please fill all fields');
-        return;
-    }
-
-    // Create new contact with a unique ID (timestamp)
-    const newContact = { id: Date.now(), name, phone, email };
-
-    // Add new contact to contacts array and save
-    contacts.push(newContact);
-    saveContacts();
-
-    // Reset to first page and update display
-    currentPage = 1;
-    closeAddModal();
-    displayContacts();
-}
-
-// --------------------
-// Edit Contact Functions
-// --------------------
-
-// Opens the Edit modal and populates fields with selected contact data
-function openEditModal(id) {
-    currentEditId = id;
-    const c = contacts.find(x => x.id === id);
-    if (!c) return; // If contact not found, exit
-
-    document.getElementById('edit-name').value = c.name;
-    document.getElementById('edit-phone').value = c.phone;
-    document.getElementById('edit-email').value = c.email;
-    document.getElementById('edit-modal').style.display = 'flex';
-}
-
-// Closes the Edit Contact modal without saving changes
-function closeEditModal() {
-    document.getElementById('edit-modal').style.display = 'none';
-}
-
-// Saves the edited contact details after validation
-function saveEdit() {
-    const name = document.getElementById('edit-name').value.trim();
-    const phone = document.getElementById('edit-phone').value.trim();
-    const email = document.getElementById('edit-email').value.trim();
-
-    // Validate fields
-    if (!name || !phone || !email) {
-        alert('Please fill all fields');
-        return;
-    }
-
-    // Find index of contact being edited
-    const i = contacts.findIndex(c => c.id === currentEditId);
-    if (i !== -1) {
-        // Update contact data
-        contacts[i] = { id: currentEditId, name, phone, email };
-        saveContacts();
-        closeEditModal();
-        displayContacts();
-    }
-}
-
-// --------------------
-// Delete Contact Functions
-// --------------------
-
-// Opens the confirmation modal for deleting a contact
-function openDeleteModal(id) {
-    deleteTargetId = id;
-    document.getElementById('delete-modal').style.display = 'flex';
-}
-
-// Closes the Delete confirmation modal without deleting
-function closeDeleteModal() {
-    document.getElementById('delete-modal').style.display = 'none';
-}
-
-// Confirms deletion, removes contact from array and updates storage/display
-function confirmDelete() {
-    contacts = contacts.filter(c => c.id !== deleteTargetId);
-    saveContacts();
-    closeDeleteModal();
-    displayContacts();
-}
-
-// --------------------
-// Search Contacts
-// --------------------
-
-// Filters contacts based on search input and displays matching results
-function searchContacts() {
-    const query = document.getElementById('search').value.toLowerCase();
-
-    // Filter contacts where name, phone, or email contains the query string
-    const filtered = contacts.filter(c =>
-        c.name.toLowerCase().includes(query) ||
-        c.phone.toLowerCase().includes(query) ||
-        c.email.toLowerCase().includes(query)
-    );
-
-    currentPage = 1; // Reset to first page on new search
-    displayContacts(filtered, true); // Display filtered contacts with search flag
-}
-
-// --------------------
-// Sorting Contacts
-// --------------------
-
-// Sorts the contacts by given key ('name' or 'email'), toggling between ascending/descending
-function sortContacts(key) {
-    // If already sorting by this key, toggle order
-    if (currentSort.key === key) {
-        currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
-    } else {
-        // Otherwise, set key and default to ascending
-        currentSort.key = key;
-        currentSort.order = 'asc';
-    }
-
-    // Update the sorting icons for UI feedback
-    const icons = {
-        name: document.getElementById('sort-name'),
-        email: document.getElementById('sort-email')
-    };
-
-    // Reset both icons to default state
-    icons.name.textContent = '▲▼';
-    icons.email.textContent = '▲▼';
-
-    // Set active icon for current sort key
-    icons[key].textContent = currentSort.order === 'asc' ? '▲' : '▼';
-
-    // Perform the sorting on contacts array (case insensitive)
-    contacts.sort((a, b) => {
-        const A = a[key].toLowerCase();
-        const B = b[key].toLowerCase();
-
-        if (A < B) return currentSort.order === 'asc' ? -1 : 1;
-        if (A > B) return currentSort.order === 'asc' ? 1 : -1;
-        return 0;
-    });
-
-    saveContacts();    // Save sorted list
-    currentPage = 1;   // Reset to first page after sort
-    displayContacts(); // Re-render contacts table
-}
+        window.addEventListener('click', (e) => {
+            document.querySelectorAll('.modal').forEach(modal => {
+                if (e.target === modal) modal.style.display = 'none';
+            });
+        });

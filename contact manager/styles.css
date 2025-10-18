@@ -1,268 +1,242 @@
-   :root {
-       --primary: #0e850a;
-       --accent: #ff6b6b;
-       --bg: #f4f6fb;
-       --white: #ffffff;
-       --text-dark: #333;
-       --border: #e0e4ea;
-       --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-       --radius: 10px;
-   }
+    :root {
+        --primary: #0e850a;
+        --accent: #ff6b6b;
+        --bg: #f4f6fb;
+        --white: #ffffff;
+        --text-dark: #333;
+        --border: #e0e4ea;
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        --radius: 12px;
+    }
 
-   body {
-       font-family: 'Inter', sans-serif;
-       background-color: var(--bg);
-       color: var(--text-dark);
-       margin: 0;
-       padding: 0;
-   }
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg);
+        color: var(--text-dark);
+        margin: 0;
+        padding: 0;
+    }
 
-   h1 {
-       text-align: center;
-       color: var(--primary);
-       margin-top: 30px;
-       font-size: 2rem;
-   }
+    h1 {
+        text-align: center;
+        color: var(--primary);
+        margin-top: 30px;
+        font-size: 2rem;
+    }
 
-   .container {
-       width: 90%;
-       max-width: 1100px;
-       margin: 40px auto;
-       background: var(--white);
-       border-radius: var(--radius);
-       box-shadow: var(--shadow);
-       padding: 25px;
-   }
+    .container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 40px auto;
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 25px;
+    }
 
-   .header {
-       display: flex;
-       justify-content: space-between;
-       align-items: center;
-       flex-wrap: wrap;
-       margin-bottom: 20px;
-   }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
 
-   .header h2 {
-       color: var(--primary);
-       margin: 0;
-   }
+    .add-btn {
+        background-color: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius);
+        padding: 10px 16px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
 
-   .add-btn {
-       background-color: var(--primary);
-       color: #fff;
-       border: none;
-       border-radius: var(--radius);
-       padding: 10px 16px;
-       font-size: 15px;
-       cursor: pointer;
-       transition: background-color 0.3s ease;
-   }
+    .add-btn:hover {
+        background-color: #3bd100;
+    }
 
-   .add-btn:hover {
-       background-color: #3bd100;
-   }
+    #search {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 20px;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
 
-   #search {
-       width: 100%;
-       padding: 12px;
-       border: 1px solid var(--border);
-       border-radius: var(--radius);
-       margin-bottom: 20px;
-       font-size: 15px;
-       box-sizing: border-box;
-   }
+    /* --- Contact Grid --- */
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 20px;
+    }
 
-   table {
-       width: 100%;
-       border-collapse: collapse;
-   }
+    .contact-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        text-align: center;
+        padding: 15px 10px;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s;
+    }
 
-   th,
-   td {
-       padding: 14px;
-       border-bottom: 1px solid var(--border);
-       text-align: left;
-       font-size: 14px;
-   }
+    .contact-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+    }
 
-   th {
-       background-color: var(--primary);
-       color: #fff;
-       cursor: pointer;
-       user-select: none;
-       position: relative;
-   }
+    .contact-card img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e0e0e0;
+        margin-bottom: 10px;
+    }
 
-   th.sortable:hover {
-       background-color: #3bd100;
-   }
+    .contact-card h4 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-dark);
+        word-wrap: break-word;
+    }
 
-   th .sort-icon {
-       margin-left: 6px;
-       font-size: 12px;
-       opacity: 0.8;
-   }
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #888;
+        display: none;
+    }
 
-   .action-buttons {
-       display: flex;
-       gap: 8px;
-       flex-wrap: wrap;
-   }
+    /* --- Pagination --- */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
 
-   .action-buttons button {
-       flex: 1;
-       padding: 8px;
-       border: none;
-       border-radius: var(--radius);
-       color: #fff;
-       font-size: 13px;
-       cursor: pointer;
-       transition: opacity 0.2s ease;
-   }
+    .pagination button {
+        border: none;
+        background: var(--primary);
+        color: white;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 14px;
+    }
 
-   .edit {
-       background-color: #20c997;
-   }
+    .pagination button:hover {
+        background: #29b300;
+    }
 
-   .delete {
-       background-color: var(--accent);
-   }
+    .pagination button.disabled {
+        background: #b8b8b8;
+        cursor: not-allowed;
+    }
 
-   .action-buttons button:hover {
-       opacity: 0.9;
-   }
+    .pagination .active {
+        background: #09700a;
+        font-weight: bold;
+    }
 
-   .empty-state {
-       text-align: center;
-       padding: 40px;
-       color: #888;
-       display: none;
-   }
+    /* --- Modals --- */
+    .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 15px;
+        animation: fadeIn 0.3s ease;
+    }
 
-   .empty-state img {
-       width: 120px;
-       opacity: 0.8;
-       margin-bottom: 15px;
-   }
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
 
-   /* Pagination */
-   .pagination {
-       display: flex;
-       justify-content: center;
-       align-items: center;
-       margin-top: 20px;
-       gap: 5px;
-       flex-wrap: wrap;
-   }
+        to {
+            opacity: 1;
+        }
+    }
 
-   .pagination button {
-       border: none;
-       background: var(--white);
-       color: var(--primary);
-       border: 1px solid var(--primary);
-       border-radius: var(--radius);
-       padding: 6px 12px;
-       cursor: pointer;
-       font-size: 14px;
-       transition: all 0.3s;
-   }
+    .modal-content {
+        background: var(--white);
+        padding: 25px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        box-sizing: border-box;
+    }
 
-   .pagination button.active {
-       background: var(--primary);
-       color: #fff;
-   }
+    .preview {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 10px;
+        border: 2px solid var(--border);
+    }
 
-   .pagination button:hover {
-       background: var(--primary);
-       color: #fff;
-   }
+    input[type="file"],
+    input[type="text"],
+    input[type="email"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 12px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        font-size: 15px;
+        box-sizing: border-box;
+    }
 
-   .modal {
-       position: fixed;
-       inset: 0;
-       background: rgba(0, 0, 0, 0.5);
-       display: none;
-       align-items: center;
-       justify-content: center;
-       z-index: 1000;
-       padding: 15px;
-       animation: fadeIn 0.3s ease;
-   }
+    .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
 
-   @keyframes fadeIn {
-       from {
-           opacity: 0;
-       }
+    .modal-actions button {
+        padding: 10px 15px;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 14px;
+        cursor: pointer;
+        color: #fff;
+    }
 
-       to {
-           opacity: 1;
-       }
-   }
+    .btn-cancel {
+        background: #6c757d;
+    }
 
-   .modal-content {
-       background: var(--white);
-       padding: 25px;
-       border-radius: var(--radius);
-       box-shadow: var(--shadow);
-       width: 100%;
-       max-width: 400px;
-       text-align: center;
-       box-sizing: border-box;
-       overflow-y: auto;
-       max-height: 90vh;
-   }
+    .btn-save {
+        background: var(--primary);
+    }
 
-   .modal-content input {
-       width: 100%;
-       padding: 10px;
-       margin-bottom: 12px;
-       border-radius: var(--radius);
-       border: 1px solid var(--border);
-       font-size: 15px;
-       box-sizing: border-box;
-   }
+    .btn-delete {
+        background: var(--accent);
+    }
 
-   .modal-actions {
-       display: flex;
-       justify-content: flex-end;
-       gap: 10px;
-       margin-top: 15px;
-       flex-wrap: wrap;
-   }
+    .edit {
+        background: #20c997;
+    }
 
-   .modal-actions button {
-       padding: 10px 15px;
-       border: none;
-       border-radius: var(--radius);
-       font-size: 14px;
-       cursor: pointer;
-       color: #fff;
-   }
-
-   .btn-cancel {
-       background: #6c757d;
-   }
-
-   .btn-save {
-       background: var(--primary);
-   }
-
-   .btn-delete {
-       background: var(--accent);
-   }
-
-   @media (max-width: 768px) {
-       .container {
-           padding: 15px;
-       }
-
-       th,
-       td {
-           font-size: 13px;
-           padding: 10px;
-       }
-
-       .modal-content {
-           max-width: 90%;
-       }
-   }
+    .delete {
+        background: var(--accent);
+    }
