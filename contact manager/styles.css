@@ -240,3 +240,9 @@
     .delete {
         background: var(--accent);
     }
+
+    @media(max-width: 600px) {
+        .container {
+            width: auto;
+        }
+    }
