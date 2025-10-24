@@ -1,4 +1,4 @@
-// Default avatar image URL for contacts without a custom image
+// Default image URL for contacts without a custom image
 const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
 
 // Retrieve existing contacts from localStorage or initialize an empty array
@@ -9,7 +9,7 @@ let currentEditId = null;
 let deleteTargetId = null;
 let currentPage = 1;
 
-// Responsive settings: determine device type and contacts per page
+// detect device type and contacts per page
 const isMobile = () => window.innerWidth <= 768;
 const perPage = () => (isMobile() ? 6 : 12);
 
@@ -17,17 +17,17 @@ const perPage = () => (isMobile() ? 6 : 12);
 document.addEventListener('DOMContentLoaded', () => displayContacts());
 window.addEventListener('resize', () => displayContacts());
 
-// Add event listener for search functionality
+//  event listener for search functionality
 document.getElementById('search').addEventListener('input', searchContacts);
 
 // Displays a preview of the selected image before adding or editing a contact
 function previewImage(input, previewId) {
     const file = input.files[0]; // Get the first selected image file from the input element
-    const preview = document.getElementById(previewId); 
- // Create a FileReader to read the file and set image source to the file content
+    const preview = document.getElementById(previewId);
+    // Create a FileReader to read the file and set image source to the file content
     if (file) {
         const reader = new FileReader();
-        reader.onload = e => preview.src = e.target.result; 
+        reader.onload = e => preview.src = e.target.result;
         reader.readAsDataURL(file);
     } else {
         //default avatar if no file is selected
