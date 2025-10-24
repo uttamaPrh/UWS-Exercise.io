@@ -20,19 +20,21 @@
         <input type="text" id="search" placeholder="Search friends..." />
 
         <div id="contacts-grid" class="contact-grid"></div>
+        <!-- Empty state for no contacts  -->
         <div class="empty-state" id="empty-default">
             <img src="./empty.webp" alt="No Contacts" width="120" />
             <p>No contacts available. Click "Add Contact" to create one!</p>
         </div>
+        <!-- Empty state for no search results -->
         <div class="empty-state" id="empty-search">
             <img src="./empty.webp" alt="No Results" width="120" />
             <p>No contacts found matching your search.</p>
         </div>
-
+        <!-- pagination number will be show here -->
         <div class="pagination" id="pagination"></div>
     </div>
 
-    <!-- Add Modal -->
+    <!-- Add new contact Modal -->
     <div class="modal" id="add-modal">
         <div class="modal-content">
             <h3>Add Contact</h3>
@@ -49,7 +51,7 @@
         </div>
     </div>
 
-    <!-- View Modal -->
+    <!-- View contact details Modal -->
     <div class="modal" id="view-modal">
         <div class="modal-content">
             <h3>Contact Details</h3>
@@ -65,7 +67,7 @@
         </div>
     </div>
 
-    <!-- Edit Modal -->
+    <!-- Edit contactModal -->
     <div class="modal" id="edit-modal">
         <div class="modal-content">
             <h3>Edit Contact</h3>
@@ -82,7 +84,7 @@
         </div>
     </div>
 
-    <!-- Delete Modal -->
+    <!-- Delete contact confirmation Modal -->
     <div class="modal" id="delete-modal">
         <div class="modal-content">
             <h3>Delete Contact?</h3>
